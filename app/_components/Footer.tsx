@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { brand, nav } from "../_data/site";
 import { Logo } from "./Header";
 import { Icon } from "./Icon";
@@ -25,11 +26,11 @@ export function Footer() {
             <div key={item.label}>
               <p className="mb-3 font-semibold text-white">{item.label}</p>
               <ul className="space-y-2 text-sm">
-                {item.children?.map((c) => (
+                {item.children.map((c) => (
                   <li key={c.label}>
-                    <a href={c.href} className="transition hover:text-gold">
+                    <Link href={c.href} className="transition hover:text-gold">
                       {c.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -38,9 +39,21 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-7xl px-6 py-6 text-xs">
-          Copyright © 2026 {brand.name}. All rights reserved.
-        </p>
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <p>Copyright © 2026 {brand.name}. All rights reserved.</p>
+          <ul className="flex gap-5">
+            <li>
+              <Link href="/terms" className="transition hover:text-gold">
+                이용약관
+              </Link>
+            </li>
+            <li>
+              <Link href="/privacy" className="font-bold text-white/85 transition hover:text-gold">
+                개인정보 처리방침
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
     </footer>
   );

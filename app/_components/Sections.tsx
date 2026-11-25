@@ -1,12 +1,6 @@
-import {
-  aboutCards,
-  education,
-  mission,
-  notices,
-  sermons,
-  stories,
-  worship,
-} from "../_data/site";
+import { formatDate, postHref } from "@/lib/board";
+import { aboutCards, education, mission, sermons, worship } from "../_data/site";
+import { getLatestPosts } from "@/lib/posts";
 import { Icon } from "./Icon";
 import { Reveal } from "./Reveal";
 import { SectionTitle } from "./SectionTitle";
@@ -112,13 +106,13 @@ export function Sermons() {
         <div className="flex items-end justify-between">
           <SectionTitle align="left" eyebrow="CHURCH19 TV" title="말씀과 찬양" />
           <div className="mb-12">
-            <MoreLink href="#sermons" />
+            <MoreLink href="/worship/sermons" />
           </div>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {sermons.map((s, i) => (
             <Reveal key={s.title} delay={i * 80}>
-              <a href="#sermons" className="group block">
+              <a href="/worship/sermons" className="group block">
                 <div className={`relative aspect-video overflow-hidden rounded-xl bg-linear-to-br ${s.tone}`}>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_25%,rgba(255,255,255,0.25),transparent_55%)] transition duration-500 group-hover:scale-110" />
                   <span className="absolute bottom-3 left-3 font-serif text-sm font-bold text-white/80">
@@ -144,29 +138,31 @@ export function Sermons() {
 }
 
 /* ───────── 나눔터: 사역 스토리 + 공지사항 ───────── */
-export function News() {
+export async function News() {
+  // 관리자 페이지에서 쓴 최신 글 ('use cache' — 글이 바뀌면 즉시 갱신)
+  const [stories, notices] = await Promise.all([getLatestPosts("stories", 3), getLatestPosts("notices", 4)]);
   return (
     <section id="news" className="scroll-mt-20 bg-cream py-24">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-2">
         <div>
           <div className="mb-6 flex items-center justify-between border-b-2 border-navy pb-4">
             <h3 className="text-xl font-bold text-navy">사역 스토리</h3>
-            <MoreLink href="#news" />
+            <MoreLink href="/community/stories" />
           </div>
           <ul className="space-y-4">
             {stories.map((s, i) => (
-              <li key={s.title}>
-                <a href="#news" className="group flex gap-5 rounded-xl bg-white p-3 transition hover:shadow-md">
+              <li key={s.id}>
+                <a href={postHref("stories", s.id)} className="group flex gap-5 rounded-xl bg-white p-3 transition hover:shadow-md">
                   <span
                     className={`grid h-20 w-28 shrink-0 place-items-center rounded-lg font-serif text-2xl font-black text-white/80 ${
                       ["bg-[#c9862f]", "bg-[#4f9a72]", "bg-[#457b9d]"][i % 3]
                     }`}
                   >
-                    {s.tag}
+                    {s.category ?? "소식"}
                   </span>
                   <span className="flex flex-col justify-center">
                     <span className="font-semibold text-ink group-hover:text-navy">{s.title}</span>
-                    <span className="mt-1 text-xs text-muted">{s.date}</span>
+                    <span className="mt-1 text-xs text-muted">{formatDate(s.date)}</span>
                   </span>
                 </a>
               </li>
@@ -177,32 +173,32 @@ export function News() {
         <div>
           <div className="mb-6 flex items-center justify-between border-b-2 border-navy pb-4">
             <h3 className="text-xl font-bold text-navy">공지사항</h3>
-            <MoreLink href="#news" />
+            <MoreLink href="/community/notices" />
           </div>
           <ul className="divide-y divide-line rounded-xl bg-white px-6">
             {notices.map((n) => (
-              <li key={n.title}>
-                <a href="#news" className="group flex items-center justify-between gap-4 py-5">
+              <li key={n.id}>
+                <a href={postHref("notices", n.id)} className="group flex items-center justify-between gap-4 py-5">
                   <span className="flex items-center gap-3">
                     <span className="size-1.5 shrink-0 rounded-full bg-gold" />
                     <span className="line-clamp-1 text-ink group-hover:text-navy group-hover:underline">
                       {n.title}
                     </span>
                   </span>
-                  <span className="shrink-0 text-xs text-muted">{n.date}</span>
+                  <span className="shrink-0 text-xs text-muted">{formatDate(n.date)}</span>
                 </a>
               </li>
             ))}
           </ul>
           <div className="mt-6 grid grid-cols-3 gap-3">
             {[
-              { label: "주보", icon: "bulletin" },
-              { label: "온라인헌금", icon: "offering" },
-              { label: "기부금영수증", icon: "form" },
+              { label: "주보", icon: "bulletin", href: "/community/bulletin" },
+              { label: "온라인헌금", icon: "offering", href: "/community/bulletin" },
+              { label: "기부금영수증", icon: "form", href: "/community/notices" },
             ].map((b) => (
               <a
                 key={b.label}
-                href="#news"
+                href={b.href}
                 className="flex flex-col items-center gap-2 rounded-xl bg-navy py-5 text-sm font-semibold text-white transition hover:bg-navy-deep"
               >
                 <Icon name={b.icon} className="size-6 text-gold" />
@@ -230,7 +226,7 @@ export function Education() {
           {education.map((e, i) => (
             <Reveal key={e.title} delay={i * 80}>
               <a
-                href="#education"
+                href={e.href}
                 className="group relative block h-full overflow-hidden rounded-2xl bg-navy p-8 text-white"
               >
                 <span className="absolute -right-4 -top-6 font-serif text-8xl font-black text-white/5 transition group-hover:text-gold/20">
@@ -270,13 +266,13 @@ export function Mission() {
           <p className="mt-6 text-white/70">지역 복음화에서 세계 선교까지, 보냄 받은 공동체로 살아갑니다.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
-              href="#mission"
+              href="/mission/world"
               className="rounded-full bg-gold px-6 py-3 text-sm font-bold text-navy-deep transition hover:bg-gold-light"
             >
               선교회 바로가기
             </a>
             <a
-              href="#mission"
+              href="/mission/videos"
               className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold transition hover:bg-white/10"
             >
               선교 영상 보기
@@ -287,7 +283,7 @@ export function Mission() {
           {mission.languages.map((l) => (
             <li key={l.title}>
               <a
-                href="#mission"
+                href="/mission/languages"
                 className="group flex items-center justify-between rounded-2xl border border-white/15 bg-white/5 px-7 py-6 backdrop-blur transition hover:border-gold hover:bg-white/10"
               >
                 <span>

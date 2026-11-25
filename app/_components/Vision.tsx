@@ -2,11 +2,15 @@ import { vision } from "../_data/site";
 import { Reveal } from "./Reveal";
 import { SectionTitle } from "./SectionTitle";
 
-export function Vision() {
+/** embedded: 소메뉴 페이지(/about/vision) 안에 넣을 때 — 배경·제목·여백 없이 본문만 */
+export function Vision({ embedded = false }: { embedded?: boolean }) {
   return (
-    <section id="vision" className="scroll-mt-20 bg-cream pb-24 pt-44 md:pt-48">
-      <div className="mx-auto max-w-7xl px-6">
-        <SectionTitle eyebrow="OUR VISION" title="교회 비전" />
+    <section
+      id={embedded ? undefined : "vision"}
+      className={embedded ? "" : "scroll-mt-20 bg-cream pb-24 pt-44 md:pt-48"}
+    >
+      <div className={embedded ? "" : "mx-auto max-w-7xl px-6"}>
+        {!embedded && <SectionTitle eyebrow="OUR VISION" title="교회 비전" />}
 
         {/* 비전 선언 */}
         <Reveal>

@@ -10,79 +10,115 @@ export const brand = {
   email: "hello@church19.org",
 };
 
-export type NavItem = {
+export type BannerImage = "worship" | "bible" | "community" | "sanctuary" | "fellowship";
+
+export type Section = {
   label: string;
-  href: string;
-  children?: { label: string; href: string }[];
+  en: string;
+  desc: string;
+  image: BannerImage;
+  pages: { slug: string; label: string }[];
 };
 
-export const nav: NavItem[] = [
-  {
+/** 사이트 메뉴 구조 — 각 소메뉴는 /{섹션}/{slug} 페이지 */
+export const sections = {
+  about: {
     label: "교회소개",
-    href: "#about",
-    children: [
-      { label: "인사말", href: "#about" },
-      { label: "비전", href: "#vision" },
-      { label: "교회연혁", href: "#about" },
-      { label: "섬기는 사람들", href: "#about" },
-      { label: "오시는 길", href: "#footer" },
+    en: "ABOUT US",
+    desc: "사람을 살리고, 키우고, 세우는 생명의 공동체",
+    image: "sanctuary",
+    pages: [
+      { slug: "greeting", label: "인사말" },
+      { slug: "vision", label: "비전" },
+      { slug: "history", label: "교회연혁" },
+      { slug: "staff", label: "섬기는 사람들" },
+      { slug: "location", label: "오시는 길" },
     ],
   },
-  {
+  worship: {
     label: "예배",
-    href: "#worship",
-    children: [
-      { label: "예배안내", href: "#worship" },
-      { label: "church19 TV", href: "#sermons" },
-      { label: "경배와 찬양", href: "#sermons" },
-      { label: "주차안내", href: "#worship" },
+    en: "WORSHIP",
+    desc: "삶 전체로 드리는 살아 있는 예배",
+    image: "worship",
+    pages: [
+      { slug: "services", label: "예배안내" },
+      { slug: "sermons", label: "church19 TV" },
+      { slug: "praise", label: "경배와 찬양" },
+      { slug: "parking", label: "주차안내" },
     ],
   },
-  {
+  education: {
     label: "교육·훈련",
-    href: "#education",
-    children: [
-      { label: "교회학교", href: "#education" },
-      { label: "청년부", href: "#education" },
-      { label: "제자훈련", href: "#education" },
-      { label: "성경대학", href: "#education" },
+    en: "EDUCATION",
+    desc: "모든 세대를 그리스도의 제자로 세웁니다",
+    image: "bible",
+    pages: [
+      { slug: "church-school", label: "교회학교" },
+      { slug: "young-adults", label: "청년부" },
+      { slug: "discipleship", label: "제자훈련" },
+      { slug: "bible-college", label: "성경대학" },
     ],
   },
-  {
+  mission: {
     label: "선교",
-    href: "#mission",
-    children: [
-      { label: "세계선교", href: "#mission" },
-      { label: "선교영상", href: "#mission" },
-      { label: "다언어 예배", href: "#mission" },
+    en: "MISSION",
+    desc: "땅끝까지 복음을 전하는 보냄 받은 공동체",
+    image: "community",
+    pages: [
+      { slug: "world", label: "세계선교" },
+      { slug: "videos", label: "선교영상" },
+      { slug: "languages", label: "다언어 예배" },
     ],
   },
-  {
+  community: {
     label: "나눔터",
-    href: "#news",
-    children: [
-      { label: "공지사항", href: "#news" },
-      { label: "사역 스토리", href: "#news" },
-      { label: "주보", href: "#news" },
-      { label: "갤러리", href: "#news" },
+    en: "COMMUNITY",
+    desc: "함께 웃고 함께 우는 church19 가족 이야기",
+    image: "fellowship",
+    pages: [
+      { slug: "notices", label: "공지사항" },
+      { slug: "stories", label: "사역 스토리" },
+      { slug: "bulletin", label: "주보" },
+      { slug: "gallery", label: "갤러리" },
     ],
   },
-];
+} satisfies Record<string, Section>;
+
+export type SectionKey = keyof typeof sections;
+
+export const pageHref = (section: SectionKey, slug: string) => `/${section}/${slug}`;
+
+export type NavItem = {
+  key: SectionKey;
+  label: string;
+  href: string;
+  children: { label: string; href: string }[];
+};
+
+export const nav: NavItem[] = (Object.keys(sections) as SectionKey[]).map((key) => {
+  const s: Section = sections[key];
+  return {
+    key,
+    label: s.label,
+    href: pageHref(key, s.pages[0].slug),
+    children: s.pages.map((p) => ({ label: p.label, href: pageHref(key, p.slug) })),
+  };
+});
 
 export const quickLinks = [
-  { label: "유튜브", icon: "youtube", href: "#sermons" },
-  { label: "온라인헌금", icon: "offering", href: "#footer" },
-  { label: "성경", icon: "bible", href: "#sermons" },
-  { label: "온라인신청", icon: "form", href: "#about" },
-  { label: "주보", icon: "bulletin", href: "#news" },
-  { label: "공지사항", icon: "notice", href: "#news" },
+  { label: "유튜브", icon: "youtube", href: "/worship/sermons" },
+  { label: "온라인헌금", icon: "offering", href: "/community/bulletin" },
+  { label: "성경", icon: "bible", href: "/education/bible-college" },
+  { label: "온라인신청", icon: "form", href: "/education/discipleship" },
+  { label: "주보", icon: "bulletin", href: "/community/bulletin" },
+  { label: "공지사항", icon: "notice", href: "/community/notices" },
 ] as const;
 
 export const featureTiles = [
-  { title: "church19 TV", sub: "Sermons", icon: "play", href: "#sermons" },
-  { title: "사역 스토리", sub: "Ministry Story", icon: "heart", href: "#news" },
-  { title: "성경", sub: "Bible", icon: "bible", href: "#sermons" },
-  { title: "경배와 찬양", sub: "Praise & Worship", icon: "music", href: "#sermons" },
+  { title: "church19 TV", sub: "Sermons", icon: "play", href: "/worship/sermons" },
+  { title: "사역 스토리", sub: "Ministry Story", icon: "heart", href: "/community/stories" },
+  { title: "성경", sub: "Bible", icon: "bible", href: "/education/bible-college" },
+  { title: "경배와 찬양", sub: "Praise & Worship", icon: "music", href: "/worship/praise" },
 ] as const;
 
 export const vision = {
@@ -134,31 +170,20 @@ export const sermons = [
   { title: "함께 꿈꾸는 하나님 나라", preacher: "담임목사", passage: "마태복음 6:9–13", date: "2026.11.01", tone: "from-[#1f4d3a] to-[#4f9a72]" },
 ];
 
-export const stories = [
-  { title: "감사로 채운 하루, 2026 추수감사주일", date: "2026.11.15", tag: "행사" },
-  { title: "몸과 마음이 하나 되는 소그룹 가을 소풍", date: "2026.11.14", tag: "소그룹" },
-  { title: "지역 어르신을 위한 김장 나눔 봉사", date: "2026.11.07", tag: "섬김" },
-];
-
-export const notices = [
-  { title: "2026 성탄 감사예배 및 성가대 모집 안내", date: "2026.11.20" },
-  { title: "겨울 성경학교 교사 지원 신청", date: "2026.11.18" },
-  { title: "사랑의 음악회 좌석 신청 안내", date: "2026.11.10" },
-  { title: "기부금 영수증 발급 일정 안내", date: "2026.11.03" },
-];
+// 사역 스토리·공지사항은 DB(나눔터 게시판)에서 가져온다 — lib/posts.ts, 관리자 페이지에서 작성
 
 export const aboutCards = [
-  { title: "교회소개", desc: "church19의 이야기와 섬기는 사람들", icon: "church", href: "#vision" },
-  { title: "새가족안내", desc: "처음 오신 분을 환영합니다", icon: "users", href: "#worship" },
-  { title: "예배안내", desc: "예배 시간과 장소 안내", icon: "clock", href: "#worship" },
-  { title: "제자훈련원", desc: "단계별 신앙 훈련 과정", icon: "book", href: "#education" },
+  { title: "교회소개", desc: "church19의 이야기와 섬기는 사람들", icon: "church", href: "/about/greeting" },
+  { title: "새가족안내", desc: "처음 오신 분을 환영합니다", icon: "users", href: "/worship/services" },
+  { title: "예배안내", desc: "예배 시간과 장소 안내", icon: "clock", href: "/worship/services" },
+  { title: "제자훈련원", desc: "단계별 신앙 훈련 과정", icon: "book", href: "/education/discipleship" },
 ] as const;
 
 export const education = [
-  { title: "교회학교", en: "Church School", desc: "영아부부터 청소년부까지 세대별 신앙 교육" },
-  { title: "청년부", en: "Young Adults", desc: "20–30대가 함께 예배하고 꿈꾸는 공동체" },
-  { title: "English Ministry", en: "English Worship", desc: "영어로 드리는 예배와 성경공부" },
-  { title: "장년 훈련", en: "Discipleship", desc: "새가족·제자·사역 훈련과 성경대학" },
+  { href: "/education/church-school", title: "교회학교", en: "Church School", desc: "영아부부터 청소년부까지 세대별 신앙 교육" },
+  { href: "/education/young-adults", title: "청년부", en: "Young Adults", desc: "20–30대가 함께 예배하고 꿈꾸는 공동체" },
+  { href: "/mission/languages", title: "English Ministry", en: "English Worship", desc: "영어로 드리는 예배와 성경공부" },
+  { href: "/education/discipleship", title: "장년 훈련", en: "Discipleship", desc: "새가족·제자·사역 훈련과 성경대학" },
 ];
 
 export const mission = {
@@ -170,3 +195,39 @@ export const mission = {
     { title: "러시아어 예배", en: "Russian Worship" },
   ],
 };
+
+// 히어로 캐러셀 — 사진: Unsplash (Unsplash License, 무료 상업적 사용 가능)
+export const heroSlides = [
+  {
+    image: "worship",
+    eyebrow: "WORSHIP",
+    title: "예배로 살아나는 교회",
+    desc: "삶의 자리에서 하나님을 만나는 살아 있는 예배,\nchurch19가 당신을 초대합니다.",
+    cta: { label: "예배 안내 바로가기", href: "/worship/services" },
+    credit: { name: "AMONWAT DUMKRUT", url: "https://unsplash.com/photos/SfGalIOhZ6Q" },
+  },
+  {
+    image: "bible",
+    eyebrow: "THE WORD",
+    title: "말씀으로 자라는 사람들",
+    desc: "말씀을 깊이 배우고 삶으로 살아내며\n그리스도의 제자로 함께 자라갑니다.",
+    cta: { label: "교육·훈련 바로가기", href: "/education/discipleship" },
+    credit: { name: "Aaron Burden", url: "https://unsplash.com/photos/6ePvMShPwcs" },
+  },
+  {
+    image: "community",
+    eyebrow: "COMMUNITY",
+    title: "사랑으로 세워가는 공동체",
+    desc: "함께 웃고 함께 우는 가족,\n하나님 사랑과 이웃 사랑을 실천합니다.",
+    cta: { label: "사역 스토리 보기", href: "/community/stories" },
+    credit: { name: "Helena Lopes", url: "https://unsplash.com/photos/PGnqT0rXWLs" },
+  },
+  {
+    image: "sanctuary",
+    eyebrow: "WELCOME",
+    title: "처음 오신 당신을 환영합니다",
+    desc: "사람을 살리고, 키우고, 세우는 생명의 공동체\nchurch19에 오신 것을 진심으로 환영합니다.",
+    cta: { label: "교회 소개 바로가기", href: "/about/greeting" },
+    credit: { name: "Debby Hudson", url: "https://unsplash.com/photos/sgdyBq6kheQ" },
+  },
+] as const;

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
+import localFont from "next/font/local";
+import { Noto_Serif_KR } from "next/font/google";
 import "./globals.css";
 
-const sans = Noto_Sans_KR({
-  variable: "--font-noto-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+const sans = localFont({
+  src: "../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
+  variable: "--font-pretendard",
+  weight: "45 920",
+  display: "swap",
 });
 
 const serif = Noto_Serif_KR({

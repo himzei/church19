@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-noto-sans), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-sans: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --font-serif: var(--font-noto-serif), "Nanum Myeongjo", serif;
 }
 
@@ -17,7 +17,6 @@
   --color-muted: #667085;
   --color-line: #e5e1d8;
 
-
   --animate-fade-up: fade-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 
   @keyframes fade-up {
@@ -32,6 +31,16 @@
   }
 }
 
+/* 히어로 캐러셀 진행바 (인라인 style에서 사용) */
+@keyframes hero-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
 body {
   background: #ffffff;
   color: var(--color-ink);
@@ -42,5 +51,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .animate-fade-up {
+    animation: none;
   }
 }
